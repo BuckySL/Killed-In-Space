@@ -6,6 +6,8 @@ package killed.at.space.game.main;
 
 import game.component.PanelGame;
 import java.awt.BorderLayout;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import javax.swing.JFrame;
 
 public class Main extends JFrame{
@@ -23,6 +25,13 @@ public class Main extends JFrame{
         setLayout(new BorderLayout());
         PanelGame panelGame=new PanelGame();
         add(panelGame);
+        addWindowListener(new WindowAdapter(){
+            @Override
+            public void windowOpened(WindowEvent e) {
+                panelGame.start();
+            }
+            
+    });
     }
     
     public static void main(String[] args) {

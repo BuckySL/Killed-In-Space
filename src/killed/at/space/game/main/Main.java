@@ -1,14 +1,12 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package killed.at.space.game.main;
 
+import Authentication.LoginForm;
 import game.component.PanelGame;
 import java.awt.BorderLayout;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import javax.swing.JFrame;
+import javax.swing.SwingUtilities;
 
 public class Main extends JFrame{
     
@@ -34,9 +32,28 @@ public class Main extends JFrame{
     });
     }
     
-    public static void main(String[] args) {
-        Main main=new Main();
+    // Original game launcher - now used for direct game testing
+    private static void startGame() {
+        Main main = new Main();
         main.setVisible(true);
-                
+    }
+    
+    // New main method that launches the login form
+    public static void main(String[] args) {
+        // Check if we want to bypass login (for testing)
+        boolean bypassLogin = false;
+        
+        if (bypassLogin) {
+            // Original game launcher for testing
+            startGame();
+        } else {
+            // Start with login form
+            SwingUtilities.invokeLater(new Runnable() {
+                @Override
+                public void run() {
+                    new LoginForm().setVisible(true);
+                }
+            });
+        }    
     }
 }

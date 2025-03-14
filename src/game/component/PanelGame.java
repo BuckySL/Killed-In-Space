@@ -1,9 +1,12 @@
 package game.component;
 
+import game.object.Player;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import java.awt.image.BufferedImage;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -17,10 +20,14 @@ public class PanelGame extends JComponent {
     private int height;
     private Thread thread;
     private boolean start = true;
+    private Key key;
 
     // FPS for game rendering
     private final int FPS = 60;
     private final int Target_Time = 1000000000 / FPS; // Corrected to nanoseconds
+    
+    //Game Object
+    private Player player;
 
     public void start() {
         width = getWidth();
@@ -46,16 +53,79 @@ public class PanelGame extends JComponent {
                 }
             }
         });
+        initObjectGame();
+        initKeyboard();
         thread.start();
     }
 
+    private void initObjectGame(){
+        player = new Player(image, image);
+        player.changeLocation(150, 150);
+    }
+    
+    private void initKeyboard(){
+        key=new Key();
+        requestFocus();
+        addKeyListener(new KeyAdapter(){
+            @Override
+            public void keyPressed(KeyEvent e) {
+                if(e.getKeyCode()== KeyEvent.VK_A){
+                    key.setKey_left(true);
+                } else if(e.getKeyCode()== KeyEvent.VK_D){
+                    key.setKey_right(true);
+                }else if(e.getKeyCode()== KeyEvent.VK_SPACE){
+                    key.setKey_space(true);                    
+                }else if(e.getKeyCode()== KeyEvent.VK_J){
+                    key.setKey_left_click(true);
+                }else if(e.getKeyCode()== KeyEvent.VK_K){
+                    key.setKey_right_click(true);
+                }
+                
+            }       
+
+            @Override
+            public void keyReleased(KeyEvent e) {
+                if(e.getKeyCode()== KeyEvent.VK_A){
+                    key.setKey_left(false);
+                } else if(e.getKeyCode()== KeyEvent.VK_D){
+                    key.setKey_right(false);
+                }else if(e.getKeyCode()== KeyEvent.VK_SPACE){
+                    key.setKey_space(false);                    
+                }else if(e.getKeyCode()== KeyEvent.VK_J){
+                    key.setKey_left_click(false);
+                }else if(e.getKeyCode()== KeyEvent.VK_K){
+                    key.setKey_right_click(false);
+                }
+            }
+            
+        });
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                float s = 0.5f;
+                while (start){
+                    float angle=player.getAngle();
+                    if(key.isKey_left()){
+                        angle-=s;
+                    }
+                    if(key.isKey_right()){
+                    
+                    angle +=s;
+                    }
+                    player.changeAngle(angle);
+                    sleep(5);
+                }
+            }
+        }).start();
+    }
+    
     private void drawBackground() {
         g2.setColor(new Color(30,30,30));
         g2.fillRect(0, 0, width, height);
     }
 
     private void drawGame() {
-        // Implementation here
+        player.draw(g2);
     }
 
     private void render() {

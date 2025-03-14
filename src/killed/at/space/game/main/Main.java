@@ -5,6 +5,7 @@ import game.component.PanelGame;
 import java.awt.BorderLayout;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
 
@@ -12,6 +13,7 @@ public class Main extends JFrame{
     
     public Main (){
         init();
+        
     }
    
     private void init(){
@@ -37,6 +39,7 @@ public class Main extends JFrame{
         Main main = new Main();
         main.setVisible(true);
     }
+    
     
     // New main method that launches the login form
     public static void main(String[] args) {

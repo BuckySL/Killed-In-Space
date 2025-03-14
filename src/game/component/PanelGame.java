@@ -2,6 +2,7 @@ package game.component;
 
 import game.object.Bullet;
 import game.object.Player;
+import game.object.Rocket;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
@@ -37,6 +38,9 @@ public class PanelGame extends JComponent {
     private List<Bullet> bullets;
     private List<Star> stars;
     private static final int NUM_STARS = 200;
+    private List<Rocket> rockets;
+    private int rocketSpawnTime = 0;
+    private final int ROCKET_SPAWN_RATE = 180;
     
     public void start() {
         width = getWidth();
@@ -66,6 +70,7 @@ public class PanelGame extends JComponent {
         initStars();
         initKeyboard();
         initBullets();
+        initRockets();
         thread.start();
     }
     private void initStars() {
@@ -73,6 +78,97 @@ public class PanelGame extends JComponent {
     for (int i = 0; i < NUM_STARS; i++) {
         stars.add(new Star(width, height));
     }
+}
+    
+    private void initRockets() {
+    rockets = new ArrayList<>();
+    new Thread(new Runnable() {
+        @Override
+        public void run() {
+            while (start) {
+                // Spawn new rockets periodically
+                rocketSpawnTime++;
+                if (rocketSpawnTime >= ROCKET_SPAWN_RATE) {
+                    spawnRocket();
+                    rocketSpawnTime = 0;
+                }
+                
+                // Update existing rockets
+                for (int i = 0; i < rockets.size(); i++) {
+                    Rocket rocket = rockets.get(i);
+                    if (rocket != null) {
+                        rocket.update(player.getX(), player.getY());
+                        
+                        // Check if rocket is out of bounds
+                        if (!rocket.check(width, height)) {
+                            rockets.remove(rocket);
+                            continue;
+                        }
+                        
+                        // Check for collision with player
+                        if (rocket.checkCollision(player.getX(), player.getY())) {
+                            // Player hit! You could add damage/lives system here
+                            rockets.remove(rocket);
+                            // You could add explosion effect here
+                        }
+                        
+                        // Check for collision with bullets
+                        for (int j = 0; j < bullets.size(); j++) {
+                            Bullet bullet = bullets.get(j);
+                            if (bullet != null) {
+                                double bulletCenterX = bullet.getX() + bullet.getSize()/2;
+                                double bulletCenterY = bullet.getY() + bullet.getSize()/2;
+                                double rocketCenterX = rocket.getX() + 16;
+                                double rocketCenterY = rocket.getY() + 16;
+                                
+                                double distance = Math.sqrt(
+                                    Math.pow(bulletCenterX - rocketCenterX, 2) + 
+                                    Math.pow(bulletCenterY - rocketCenterY, 2)
+                                );
+                                
+                                if (distance < 20) { // Bullet hit rocket
+                                    rockets.remove(rocket);
+                                    bullets.remove(bullet);
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                }
+                sleep(10);
+            }
+        }
+    }).start();
+}
+
+// Method to spawn a new rocket at a random position on the edge of the screen
+private void spawnRocket() {
+    int side = (int)(Math.random() * 4); // 0=top, 1=right, 2=bottom, 3=left
+    double x, y;
+    
+    switch (side) {
+        case 0: // Top
+            x = Math.random() * width;
+            y = -32;
+            break;
+        case 1: // Right
+            x = width;
+            y = Math.random() * height;
+            break;
+        case 2: // Bottom
+            x = Math.random() * width;
+            y = height;
+            break;
+        case 3: // Left
+            x = -32;
+            y = Math.random() * height;
+            break;
+        default:
+            x = -32;
+            y = -32;
+    }
+    
+    rockets.add(new Rocket(x, y));
 }
     
     private void initObjectGame(){
@@ -210,6 +306,13 @@ public class PanelGame extends JComponent {
                 bullet.draw(g2);
             }
         }
+        
+        for (int i = 0; i < rockets.size(); i++) {
+        Rocket rocket = rockets.get(i);
+        if (rocket != null) {
+            rocket.draw(g2);
+        }
+    }
     }
 
     private void render() {

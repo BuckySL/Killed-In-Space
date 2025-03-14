@@ -13,6 +13,7 @@ public class KilledAtSpace extends JPanel {
     
     public KilledAtSpace() {
         initComponents();
+       
     }
     
     private void initComponents() {
@@ -22,6 +23,7 @@ public class KilledAtSpace extends JPanel {
         panelGame = new PanelGame();
         add(panelGame, BorderLayout.CENTER);
     }
+    
     
     @Override
     public void requestFocus() {

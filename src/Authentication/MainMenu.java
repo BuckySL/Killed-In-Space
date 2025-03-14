@@ -13,6 +13,7 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import javax.swing.BorderFactory;
 import javax.swing.Box;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -31,6 +32,7 @@ public class MainMenu extends JFrame {
     
     public MainMenu(User user) {
         this.currentUser = user;
+        setWindowIcon();
         initComponents();
         updateScoreDisplay();
     }
@@ -202,7 +204,10 @@ public class MainMenu extends JFrame {
             System.exit(0);
         }
     }
-
+     private void setWindowIcon() {
+        ImageIcon icon = new ImageIcon(getClass().getResource("/game/image/plane.png"));
+        setIconImage(icon.getImage());
+    }
     void setAudioPlayer(AudioPlayer audioPlayer) {
         throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
     }

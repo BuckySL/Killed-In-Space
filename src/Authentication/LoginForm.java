@@ -20,6 +20,7 @@ import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 import javax.swing.border.EmptyBorder;
 import game.audio.AudioPlayer;
+import javax.swing.ImageIcon;
 
 public class LoginForm extends JFrame {
     
@@ -32,6 +33,7 @@ public class LoginForm extends JFrame {
     
     public LoginForm() {
         audioPlayer = new AudioPlayer();
+        setWindowIcon();
         initComponents();
     }
     
@@ -252,6 +254,10 @@ public class LoginForm extends JFrame {
                 mainMenu.setVisible(true);
             }
         });
+    }
+     private void setWindowIcon() {
+        ImageIcon icon = new ImageIcon(getClass().getResource("/game/image/plane.png"));
+        setIconImage(icon.getImage());
     }
     
     public static void main(String args[]) {

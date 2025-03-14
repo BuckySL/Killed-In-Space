@@ -1,13 +1,19 @@
 package game.component;
 
+import game.object.Bullet;
 import game.object.Player;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.util.List;
 import java.awt.RenderingHints;
+import java.awt.Shape;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.awt.geom.Ellipse2D;
 import java.awt.image.BufferedImage;
+import static java.lang.Thread.sleep;
+import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JComponent;
@@ -21,14 +27,17 @@ public class PanelGame extends JComponent {
     private Thread thread;
     private boolean start = true;
     private Key key;
-
+    private int shotTime;
     // FPS for game rendering
     private final int FPS = 60;
     private final int Target_Time = 1000000000 / FPS; // Corrected to nanoseconds
     
     //Game Object
     private Player player;
-
+    private List<Bullet> bullets;
+    private List<Star> stars;
+    private static final int NUM_STARS = 200;
+    
     public void start() {
         width = getWidth();
         height = getHeight();
@@ -54,10 +63,18 @@ public class PanelGame extends JComponent {
             }
         });
         initObjectGame();
+        initStars();
         initKeyboard();
+        initBullets();
         thread.start();
     }
-
+    private void initStars() {
+    stars = new ArrayList<>();
+    for (int i = 0; i < NUM_STARS; i++) {
+        stars.add(new Star(width, height));
+    }
+}
+    
     private void initObjectGame(){
         player = new Player(image, image);
         player.changeLocation(150, 150);
@@ -112,6 +129,38 @@ public class PanelGame extends JComponent {
                     
                     angle +=s;
                     }
+                    if(key.isKey_left_click()||key.isKey_right_click()){
+                        if(shotTime==0){
+                        if(key.isKey_left_click()){
+                            Shape bulletShape = new Ellipse2D.Double(0, 0, 5, 5);
+                            bullets.add(0, new Bullet(player.getX(), player.getY(), bulletShape, player.getAngle(), 1));
+                        
+                        }else{
+                            Shape bulletShape = new Ellipse2D.Double(0, 0, 5, 5);
+                            bullets.add(0, new Bullet(player.getX(), player.getY(), bulletShape, player.getAngle(), 1.5));
+                            
+                        }
+                        
+                        }
+                        shotTime++;
+                        if(shotTime==15){
+                            shotTime = 0;
+                        }
+                        else{
+                        shotTime = 0;
+                    }
+                        
+                    }
+                    
+                    
+                    
+                    
+                    if(key.isKey_space()){
+                        player.speedUp();
+                    }else{
+                        player.speedDown();
+                    }
+                    player.update();
                     player.changeAngle(angle);
                     sleep(5);
                 }
@@ -119,13 +168,48 @@ public class PanelGame extends JComponent {
         }).start();
     }
     
-    private void drawBackground() {
-        g2.setColor(new Color(30,30,30));
-        g2.fillRect(0, 0, width, height);
+    private void initBullets(){
+        bullets = new ArrayList<>();
+        new Thread (new Runnable() {
+            @Override
+            public void run() {
+                while (start){
+                  for(int i=0;i<bullets.size();i++){
+                  Bullet bullet=bullets.get(i);
+                  if(bullet!=null){
+                     bullet.update();
+                     if(!bullet.check(width,height)){
+                         bullets.remove(bullet);
+                     }
+                  }
+                }
+                  sleep(1);
+               } 
+            }
+        }).start();;
+    
     }
+    
+   private void drawBackground() {
+    // Draw dark background
+    g2.setColor(new Color(5, 5, 20)); // Very dark blue instead of pure black
+    g2.fillRect(0, 0, width, height);
+    
+    // Update and draw stars
+    for (Star star : stars) {
+        star.update();
+        star.draw(g2);
+    }
+}
 
     private void drawGame() {
         player.draw(g2);
+        for(int i = 0;i<bullets.size();i++){
+            Bullet bullet=bullets.get(i);
+            if(bullet !=null){
+                bullet.draw(g2);
+            }
+        }
     }
 
     private void render() {

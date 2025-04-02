@@ -1,6 +1,7 @@
 package killed.at.space;
 
 import Authentication.User;
+import game.audio.AudioPlayer;
 import game.component.PanelGame;
 import java.awt.BorderLayout;
 import javax.swing.JPanel;
@@ -10,6 +11,7 @@ public class KilledAtSpace extends JPanel {
     private PanelGame panelGame;
     private User currentUser;
     private int score = 0; // Simple score tracker
+    private AudioPlayer audioPlayer;
     
     public KilledAtSpace() {
         initComponents();
@@ -27,7 +29,7 @@ public class KilledAtSpace extends JPanel {
     
     @Override
     public void requestFocus() {
-        // Delegate focus to the game panel
+        //Focus to the game panel
         if (panelGame != null) {
             panelGame.requestFocus();
         }
@@ -44,15 +46,17 @@ public class KilledAtSpace extends JPanel {
     }
     
     public void stopGame() {
-        // In a real implementation, you would calculate the score based on gameplay
-        // For now, let's just simulate a score
         this.score = (int)(Math.random() * 450) + 50;
     }
     
     public int getScore() {
         return score;
     }
+
+    public void setAudioPlayer(AudioPlayer audioPlayer) {
+         this.audioPlayer = audioPlayer;
+    }
+
+   
     
-    // Remove the main method since this is now a JPanel component
-    // If you need a test method, you can add it separately
 }
